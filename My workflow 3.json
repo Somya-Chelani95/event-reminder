@@ -1,0 +1,261 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a7d45263-91a9-43a2-8b92-4eeadc682373",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1zW3AsXUIERxHMRu7Fj5QhnLWJEa9QJalofugg1fhTSU",
+          "mode": "list",
+          "cachedResultName": "Event_list",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zW3AsXUIERxHMRu7Fj5QhnLWJEa9QJalofugg1fhTSU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zW3AsXUIERxHMRu7Fj5QhnLWJEa9QJalofugg1fhTSU/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "80903dab-19eb-4035-9ee7-7e3c262dfe16",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "u7gfDY7c845x4Niw",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4326891c-03c2-440b-a638-ea423c966a5f",
+              "leftValue": "={{ $json['Event_date '].toDateTime().format('yyyy-MM-dd') }}",
+              "rightValue": "={{ $now.toFormat(\"yyyy-MM-dd\") }}\n",
+              "operator": {
+                "type": "dateTime",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "01026435-bd5b-4160-94d3-1ed7a2a5b465",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "5436448379",
+        "text": "=your {{ $json.Event_name }} is scheduled at {{ $json.Event_time }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        -96
+      ],
+      "id": "181f13c4-08df-4e2c-a781-3d4b7b3a5014",
+      "name": "Send a text message",
+      "webhookId": "e1c22d1f-ec02-4325-a6fe-816343e3e4c2",
+      "credentials": {
+        "telegramApi": {
+          "id": "sMcdUysEzTrOwbM5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "somyachelani05@gmail.com",
+        "subject": "Event Reminder",
+        "emailType": "text",
+        "message": "=your  {{ $json.Event_name }} is scheduled at {{ $json.Event_time }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        -304
+      ],
+      "id": "5c2a3e21-2658-458c-8dab-ea8f79bcdbe1",
+      "name": "Send a message",
+      "webhookId": "53c1001b-8574-43f2-bd3c-9a469d628257",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ceNzm5jWsjsZFvj9",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11,
+              "triggerAtMinute": 40
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        -224
+      ],
+      "id": "7f99919c-5422-4ec3-b4a1-61d66c3a744c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9f2d499c-1866-42c4-aa23-d482c6b72779",
+              "leftValue": "={{ $now.toFormat(\"hh-mm\") }}",
+              "rightValue": "={{ $('Schedule Trigger').item.json.Hour }}-{{ $('Schedule Trigger').item.json.Minute }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "e050fdb5-f47e-42bc-a63e-801ba94760ac",
+      "name": "If1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "80cd3707-441f-4089-9f4b-e3321a3f6bba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f587339df08304f5438caa1d53cc41fe7eafa8a11ec24d9fe8485b97f1f1edd"
+  },
+  "id": "4vdc79P7KgQDZgwj",
+  "tags": []
+}
